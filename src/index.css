@@ -1,0 +1,323 @@
+@import "tailwindcss";
+
+:root {
+  --bg-table-outer: #000000;
+  --bg-table-inner: #000000;
+  --bg-table-glow: #000000;
+  --table-border: #d97706;
+  --bg-panel: rgba(15, 15, 15, 0.88);
+  --bg-card: #0a0a0a;
+  --text-main: #f8fafc;
+  --text-muted: #cbd5e1;
+  --border-color: rgba(251, 191, 36, 0.28);
+}
+
+html:not(.dark) {
+  --bg-table-outer: #000000;
+  --bg-table-inner: #0a0a0a;
+  --bg-table-glow: #111111;
+  --table-border: #d97706;
+  --bg-panel: rgba(20, 20, 20, 0.88);
+  --bg-card: #ffffff;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-color: rgba(251, 191, 36, 0.32);
+}
+
+.dark {
+  --bg-table-outer: #000000;
+  --bg-table-inner: #000000;
+  --bg-table-glow: #000000;
+  --table-border: #b45309;
+  --bg-panel: rgba(10, 10, 10, 0.9);
+  --bg-card: #0a0a0a;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-color: rgba(245, 158, 11, 0.26);
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background-color: #000000;
+  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  touch-action: manipulation;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* iPhone 12 mini / iOS 刘海与底部横条安全区适配 */
+.safe-area-table {
+  padding-top: max(4px, env(safe-area-inset-top));
+  padding-bottom: max(4px, env(safe-area-inset-bottom));
+  padding-left: max(8px, env(safe-area-inset-left));
+  padding-right: max(8px, env(safe-area-inset-right));
+}
+
+.safe-area-pad {
+  padding-left: max(8px, env(safe-area-inset-left));
+  padding-right: max(8px, env(safe-area-inset-right));
+}
+
+.font-calligraphy {
+  font-family: "STKaiti", "KaiTi", "FZKai-Z03S", "Songti SC", "SimSun", "PingFang SC", serif;
+}
+
+/* 纯黑 OLED 桌面背景 */
+.mahjong-table-felt {
+  background-color: #000000;
+}
+
+.mahjong-table-pattern {
+  background: none;
+}
+
+/* 欢乐麻将本家大立体牌（象牙白牌面 + 翠玉底座厚度 + GPU 硬件加速） */
+.tile-3d-front {
+  background: linear-gradient(180deg, #ffffff 0%, #fffdf5 75%, #f3e8c8 100%);
+  box-shadow:
+    0 3.5px 0 #0d9488,
+    0 4.5px 0 #065f46,
+    0 6px 10px rgba(0, 0, 0, 0.55),
+    inset 0 1.5px 0 rgba(255, 255, 255, 1),
+    inset 0 -1px 2px rgba(180, 140, 70, 0.28);
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* 桌面平铺弃牌/副露小立体牌 */
+.tile-3d-front-sm {
+  background: linear-gradient(180deg, #ffffff 0%, #fffdf7 78%, #efe2be 100%);
+  box-shadow:
+    0 2px 0 #0f766e,
+    0 3px 4px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  transform: translateZ(0);
+}
+
+/* 欢乐麻将翡翠蓝绿立体牌背 */
+.tile-3d-back {
+  background: linear-gradient(160deg, #2dd4bf 0%, #0d9488 52%, #0f766e 100%);
+  box-shadow:
+    0 2px 0 #115e59,
+    0 3px 5px rgba(0, 0, 0, 0.5),
+    inset 0 1px 1px rgba(255, 255, 255, 0.45);
+}
+
+/* 左右两家侧面立牌 3D 质感 */
+.tile-3d-side {
+  background: linear-gradient(90deg, #5eead4 0%, #14b8a6 45%, #0f766e 100%);
+  box-shadow:
+    0 1.5px 0 #134e4a,
+    1.5px 1.5px 3px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 欢乐麻将：四方向出牌飞出放大特写动画 */
+@keyframes fly-from-bottom {
+  0% {
+    transform: translate3d(0, 56px, 0) scale(1.28);
+    opacity: 0.25;
+  }
+  35% {
+    transform: translate3d(0, -4px, 0) scale(1.08);
+    opacity: 1;
+  }
+  80% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(0, 4px, 0) scale(0.85);
+    opacity: 0;
+  }
+}
+
+@keyframes fly-from-top {
+  0% {
+    transform: translate3d(0, -56px, 0) scale(1.28);
+    opacity: 0.25;
+  }
+  35% {
+    transform: translate3d(0, 4px, 0) scale(1.08);
+    opacity: 1;
+  }
+  80% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(0, -4px, 0) scale(0.85);
+    opacity: 0;
+  }
+}
+
+@keyframes fly-from-left {
+  0% {
+    transform: translate3d(-64px, 0, 0) scale(1.28);
+    opacity: 0.25;
+  }
+  35% {
+    transform: translate3d(4px, 0, 0) scale(1.08);
+    opacity: 1;
+  }
+  80% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(-4px, 0, 0) scale(0.85);
+    opacity: 0;
+  }
+}
+
+@keyframes fly-from-right {
+  0% {
+    transform: translate3d(64px, 0, 0) scale(1.28);
+    opacity: 0.25;
+  }
+  35% {
+    transform: translate3d(-4px, 0, 0) scale(1.08);
+    opacity: 1;
+  }
+  80% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(4px, 0, 0) scale(0.85);
+    opacity: 0;
+  }
+}
+
+.animate-fly-bottom {
+  animation: fly-from-bottom 0.78s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.animate-fly-top {
+  animation: fly-from-top 0.78s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.animate-fly-left {
+  animation: fly-from-left 0.78s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.animate-fly-right {
+  animation: fly-from-right 0.78s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes river-land {
+  0% {
+    transform: scale(1.38) translateY(-6px);
+    box-shadow: 0 0 18px rgba(251, 191, 36, 0.95);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-river-land {
+  animation: river-land 0.26s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes pointer-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-pointer-bounce {
+  animation: pointer-bounce 0.75s ease-in-out infinite;
+}
+
+@keyframes action-stamp {
+  0% {
+    transform: scale(1.9) rotate(-6deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(0.94) rotate(2deg);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(1.04) rotate(0deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.animate-action-stamp {
+  animation: action-stamp 0.32s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes shockwave-ring {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(2.1);
+    opacity: 0;
+  }
+}
+
+.animate-shockwave {
+  animation: shockwave-ring 0.6s ease-out forwards;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.55), 0 0 12px rgba(251, 191, 36, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(251, 191, 36, 0), 0 0 18px rgba(251, 191, 36, 0.75);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 1.6s infinite;
+}
+
+/* 针对 iPhone 12 mini 横屏 (高度 <= 400px) 的紧凑高度精细适配 */
+@media (max-height: 410px) and (orientation: landscape) {
+  .mini-compact-header {
+    padding-top: 2px;
+    padding-bottom: 2px;
+  }
+  .mini-compact-compass {
+    width: 4.5rem;
+    height: 4.5rem;
+  }
+  .mini-compact-actions {
+    min-height: 36px;
+  }
+  .mini-compact-hand {
+    padding-top: 8px;
+    padding-bottom: 2px;
+  }
+}
