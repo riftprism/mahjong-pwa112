@@ -303,7 +303,32 @@ body,
   animation: pulse-glow 1.6s infinite;
 }
 
-/* 针对 iPhone 12 mini 横屏 (高度 <= 400px) 的紧凑高度精细适配 */
+/* 自适应14张手牌尺寸：利用 flex 自动均分容器宽度，保证任何手机屏幕上14张牌100%完整显示不裁切 */
+.hand-tile-md {
+  flex: 1 1 0%;
+  width: 100%;
+  max-width: 45px;
+  min-width: 21px;
+  aspect-ratio: 5 / 7;
+}
+
+/* 浏览器内强制 90° 旋转横屏容器（无需关闭手机系统方向锁即可横屏满屏游玩） */
+.force-landscape-rotate {
+  position: fixed !important;
+  top: 0 !important;
+  left: 100vw !important;
+  width: 100dvh !important;
+  height: 100vw !important;
+  transform-origin: top left !important;
+  transform: rotate(90deg) !important;
+  z-index: 10;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left: max(12px, env(safe-area-inset-top));
+  padding-right: max(12px, env(safe-area-inset-bottom));
+}
+
+/* 针对 iPhone 12 mini 横屏 (高度 <= 410px) 的紧凑高度精细适配 */
 @media (max-height: 410px) and (orientation: landscape) {
   .mini-compact-header {
     padding-top: 2px;
@@ -317,7 +342,7 @@ body,
     min-height: 36px;
   }
   .mini-compact-hand {
-    padding-top: 8px;
+    padding-top: 6px;
     padding-bottom: 2px;
   }
 }

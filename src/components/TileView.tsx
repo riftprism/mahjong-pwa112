@@ -218,7 +218,7 @@ function TiaoFace({ value }: { value: number }) {
       { x: 20, y: 6, h: 11, c: C_RED },
       { x: 11, y: 19, h: 11 },
       { x: 20, y: 19, h: 11 },
-      { x: 29, y: 19, h: 11 },
+      { x: 29, y: 19, r: 0, h: 11 },
       { x: 11, y: 33, h: 11 },
       { x: 20, y: 33, h: 11 },
       { x: 29, y: 33, h: 11 },
@@ -264,10 +264,10 @@ function CharacterOrHonorFace({ tile }: { tile: Tile }) {
     const numChar = WAN_NUMS[tile.value - 1] ?? String(tile.value)
     return (
       <div className="flex flex-col items-center justify-center w-full h-full leading-none py-0.5 font-calligraphy">
-        <span className="text-[1.08em] font-black text-slate-900 tracking-tighter">
+        <span className="text-[1.05em] font-black text-slate-900 tracking-tighter">
           {numChar}
         </span>
-        <span className="text-[0.95em] font-black text-red-600 -mt-0.5">萬</span>
+        <span className="text-[0.92em] font-black text-red-600 -mt-0.5">萬</span>
       </div>
     )
   }
@@ -275,7 +275,7 @@ function CharacterOrHonorFace({ tile }: { tile: Tile }) {
   if (tile.suit === 'wind') {
     return (
       <div className="flex flex-col items-center justify-center w-full h-full font-calligraphy">
-        <span className="text-[1.45em] font-black text-slate-800 drop-shadow-[0_1px_0_rgba(255,255,255,0.8)]">
+        <span className="text-[1.4em] font-black text-slate-800 drop-shadow-[0_1px_0_rgba(255,255,255,0.8)]">
           {tile.name}
         </span>
       </div>
@@ -285,7 +285,7 @@ function CharacterOrHonorFace({ tile }: { tile: Tile }) {
   if (tile.value === 1) {
     return (
       <div className="flex items-center justify-center w-full h-full font-calligraphy">
-        <span className="text-[1.5em] font-black text-red-600 drop-shadow-[0_1px_0_rgba(255,255,255,0.8)]">
+        <span className="text-[1.45em] font-black text-red-600 drop-shadow-[0_1px_0_rgba(255,255,255,0.8)]">
           中
         </span>
       </div>
@@ -294,7 +294,7 @@ function CharacterOrHonorFace({ tile }: { tile: Tile }) {
   if (tile.value === 2) {
     return (
       <div className="flex items-center justify-center w-full h-full font-calligraphy">
-        <span className="text-[1.45em] font-black text-emerald-700 drop-shadow-[0_1px_0_rgba(255,255,255,0.8)]">
+        <span className="text-[1.4em] font-black text-emerald-700 drop-shadow-[0_1px_0_rgba(255,255,255,0.8)]">
           發
         </span>
       </div>
@@ -322,17 +322,18 @@ export function TileView({
   className = '',
 }: TileViewProps) {
   const sizeClasses = {
-    xs: 'w-5 h-7 text-[10px] rounded-[4px]',
-    river: 'w-[22px] h-[30px] sm:w-6.5 sm:h-9 text-[10px] sm:text-xs rounded-[4px]',
-    sm: 'w-7.5 h-10.5 text-xs rounded-[5px]',
-    md: 'w-[38px] h-[53px] sm:w-11.5 sm:h-16 text-[15px] sm:text-lg rounded-[6px] sm:rounded-[7px]',
-    lg: 'w-12 h-16.5 sm:w-14 sm:h-19.5 text-lg sm:text-xl rounded-[8px]',
+    xs: 'w-5 h-7 text-[10px] rounded-[4px] shrink-0',
+    river: 'w-[21px] h-[29px] sm:w-6.5 sm:h-9 text-[10px] sm:text-xs rounded-[4px] shrink-0',
+    sm: 'w-7 h-10 text-xs rounded-[5px] shrink-0',
+    // hand-tile-responsive Uses CSS variable / fluid sizing so 14 tiles always fit on 1 row
+    md: 'hand-tile-md text-[13px] sm:text-lg rounded-[5px] sm:rounded-[7px]',
+    lg: 'w-12 h-16.5 sm:w-14 sm:h-19.5 text-lg sm:text-xl rounded-[8px] shrink-0',
   }[size]
 
   if (faceDown) {
     return (
       <div
-        className={`tile-3d-back inline-flex items-center justify-center border border-emerald-200/40 select-none shrink-0 ${sizeClasses} ${className}`}
+        className={`tile-3d-back inline-flex items-center justify-center border border-emerald-200/40 select-none ${sizeClasses} ${className}`}
       >
         <div className="w-3/4 h-3/4 rounded-[2px] border border-white/25 bg-white/5 flex items-center justify-center">
           <div className="w-1.5 h-1.5 rotate-45 bg-amber-300/50" />
@@ -353,14 +354,14 @@ export function TileView({
       disabled={!onClick}
       title={tile.name}
       className={[
-        'relative inline-flex flex-col items-center justify-center shrink-0 select-none transition-all duration-150',
+        'relative inline-flex flex-col items-center justify-center select-none transition-all duration-150',
         isSmall ? 'tile-3d-front-sm' : 'tile-3d-front',
         'border border-amber-900/20',
         sizeClasses,
         selected
-          ? '-translate-y-3.5 ring-2 ring-amber-400 shadow-[0_12px_20px_rgba(245,158,11,0.55)] z-20'
+          ? '-translate-y-3 ring-2 ring-amber-400 shadow-[0_10px_18px_rgba(245,158,11,0.55)] z-20'
           : onClick
-            ? 'active:scale-95 hover:-translate-y-1 cursor-pointer'
+            ? 'active:scale-95 hover:-translate-y-0.5 cursor-pointer'
             : 'cursor-default',
         isLastDiscard
           ? 'ring-2 ring-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.9)] animate-river-land z-20'
@@ -368,27 +369,27 @@ export function TileView({
         isSameAsSelected && !selected
           ? 'ring-2 ring-cyan-400 brightness-105 shadow-[0_0_12px_rgba(34,211,238,0.85)] z-10'
           : '',
-        isNewlyDrawn ? 'ml-2.5 sm:ml-3.5' : '',
+        isNewlyDrawn ? 'ml-1.5 sm:ml-3' : '',
         className,
       ].join(' ')}
     >
-      {/* 欢乐麻将标志性：最新打出的弃牌正上方悬浮跳动金色指示锥 */}
+      {/* 最新打出的弃牌上方跳动金色指示锥 */}
       {isLastDiscard && (
-        <span className="pointer-events-none absolute -top-4 left-1/2 -translate-x-1/2 z-30 animate-pointer-bounce flex flex-col items-center">
-          <span className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[7px] border-t-amber-400 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" />
+        <span className="pointer-events-none absolute -top-3.5 left-1/2 -translate-x-1/2 z-30 animate-pointer-bounce flex flex-col items-center">
+          <span className="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[6px] border-t-amber-400 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" />
         </span>
       )}
 
       {/* 左上角点数速读角标 */}
       {cornerBadge && (
-        <span className="absolute top-0.5 left-1 text-[8px] leading-none font-black text-slate-500/85 pointer-events-none">
+        <span className="absolute top-0.5 left-0.5 text-[7px] sm:text-[8px] leading-none font-black text-slate-500/85 pointer-events-none">
           {cornerBadge}
         </span>
       )}
 
-      {/* 欢乐麻将风格：打此张可听牌的橙金「听」角标 */}
+      {/* 打此张可听牌的橙金「听」角标 */}
       {canTingIfDiscarded && (
-        <span className="absolute -top-2 -right-1 px-1 py-0.2 text-[9px] leading-3.5 font-black rounded-full bg-gradient-to-b from-amber-400 to-orange-600 text-white shadow-md ring-1 ring-amber-200 z-20">
+        <span className="absolute -top-2 -right-0.5 px-1 py-0 text-[8px] sm:text-[9px] leading-3.5 font-black rounded-full bg-gradient-to-b from-amber-400 to-orange-600 text-white shadow-md ring-1 ring-amber-200 z-20">
           听
         </span>
       )}
