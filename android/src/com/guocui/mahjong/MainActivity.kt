@@ -47,7 +47,9 @@ class MainActivity : Activity() {
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
+        requestWindowFeature( android.view.Window.FEATURE_NO_TITLE )
         super.onCreate(savedInstanceState)
+        actionBar?.hide()
 
         // 1. 保持屏幕常亮 + 开启一加 Ace 7 120Hz 高刷新率与全面屏挖孔延伸
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -84,11 +86,20 @@ class MainActivity : Activity() {
                     relPath = "index.html"
                 }
 
+                val corsHeaders = mapOf(
+                    "Access-Control-Allow-Origin" to "*",
+                    "Access-Control-Allow-Methods" to "GET, HEAD, OPTIONS",
+                    "Cache-Control" to "no-store"
+                )
+
                 // 拦截虚拟 Service Worker 注册，避免本地打包资源离线冲突
                 if (relPath == "sw.js" || relPath == "registerSW.js") {
                     return WebResourceResponse(
                         "application/javascript",
                         "UTF-8",
+                        200,
+                        "OK",
+                        corsHeaders,
                         ByteArrayInputStream("// native offline bundle".toByteArray(Charsets.UTF_8))
                     )
                 }
@@ -96,7 +107,7 @@ class MainActivity : Activity() {
                 return try {
                     val assetStream = assets.open("www/$relPath")
                     val mime = guessMimeType(relPath)
-                    WebResourceResponse(mime, "UTF-8", assetStream)
+                    WebResourceResponse(mime, "UTF-8", 200, "OK", corsHeaders, assetStream)
                 } catch (_: Exception) {
                     null
                 }
