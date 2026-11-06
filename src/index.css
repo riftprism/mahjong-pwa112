@@ -60,17 +60,17 @@ body,
   -webkit-font-smoothing: antialiased;
 }
 
-/* iPhone 12 mini / iOS 刘海与底部横条安全区适配 */
+/* 一加 Ace 7 (Android 17 挖孔全面屏) 与 iOS 安全区双向适配 */
 .safe-area-table {
-  padding-top: max(4px, env(safe-area-inset-top));
-  padding-bottom: max(4px, env(safe-area-inset-bottom));
-  padding-left: max(8px, env(safe-area-inset-left));
-  padding-right: max(8px, env(safe-area-inset-right));
+  padding-top: max(4px, var(--android-inset-top, env(safe-area-inset-top, 4px)));
+  padding-bottom: max(4px, var(--android-inset-bottom, env(safe-area-inset-bottom, 4px)));
+  padding-left: max(14px, var(--android-inset-left, env(safe-area-inset-left, 14px)));
+  padding-right: max(14px, var(--android-inset-right, env(safe-area-inset-right, 14px)));
 }
 
 .safe-area-pad {
-  padding-left: max(8px, env(safe-area-inset-left));
-  padding-right: max(8px, env(safe-area-inset-right));
+  padding-left: max(14px, var(--android-inset-left, env(safe-area-inset-left, 14px)));
+  padding-right: max(14px, var(--android-inset-right, env(safe-area-inset-right, 14px)));
 }
 
 .font-calligraphy {
@@ -303,11 +303,11 @@ body,
   animation: pulse-glow 1.6s infinite;
 }
 
-/* 自适应14张手牌尺寸：利用 flex 自动均分容器宽度，保证任何手机屏幕上14张牌100%完整显示不裁切 */
+/* 自适应14张手牌尺寸：利用 flex 自动均分容器宽度，保证一加 Ace 7 (20:9) 与 iPhone 上 14 张牌 100% 完整显示 */
 .hand-tile-md {
   flex: 1 1 0%;
   width: 100%;
-  max-width: 45px;
+  max-width: 52px;
   min-width: 21px;
   aspect-ratio: 5 / 7;
 }

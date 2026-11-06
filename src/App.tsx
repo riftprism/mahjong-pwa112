@@ -647,8 +647,8 @@ export default function App() {
             </div>
           )}
 
-          {/* 本家 13/14 张手牌：全宽自适应均分，保证任何手机屏幕上 14 张牌全部完整呈现 */}
-          <div className="flex-1 max-w-2xl flex items-end justify-center gap-[2px] sm:gap-1">
+          {/* 本家 13/14 张手牌：全宽自适应均分，适配一加 Ace 7 20:9 宽屏与小屏手机 */}
+          <div className="flex-1 max-w-4xl flex items-end justify-center gap-[2px] sm:gap-1.5">
             {human.hand.map((tile) => {
               const isSelected = selectedTileId === tile.id
               const isNewlyDrawn = lastDrawnTileId === tile.id

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useGameStore } from '../game/state/store'
 import type { PlayerId } from '../game/types'
 
@@ -19,6 +19,21 @@ export function ScoreModal({ open, onClose }: ScoreModalProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const [statusMsg, setStatusMsg] = useState<{ ok: boolean; text: string } | null>(null)
 
+  // 注册 Android 原生文件选择器回调
+  useEffect(() => {
+    window.__onAndroidImportRecords = (jsonText: string) => {
+      const res = importRecords(jsonText)
+      setStatusMsg({ ok: res.ok, text: res.message })
+    }
+    window.__onAndroidExportSuccess = (msg: string) => {
+      setStatusMsg({ ok: true, text: msg })
+    }
+    return () => {
+      delete window.__onAndroidImportRecords
+      delete window.__onAndroidExportSuccess
+    }
+  }, [importRecords])
+
   if (!open) return null
 
   const winRate =
@@ -28,17 +43,33 @@ export function ScoreModal({ open, onClose }: ScoreModalProps) {
 
   const handleExportFile = () => {
     const json = exportRecords()
+    const dateStr = new Date().toISOString().slice(0, 10)
+    const fileName = `mahjong-records-${dateStr}.json`
+
+    // 若在 Android 原生 App 容器内运行，调用系统文件保存器
+    if (window.AndroidBridge?.exportRecordsFile) {
+      window.AndroidBridge.exportRecordsFile(json, fileName)
+      return
+    }
+
     const blob = new Blob([json], { type: 'application/json;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
-    const dateStr = new Date().toISOString().slice(0, 10)
     a.href = url
-    a.download = `mahjong-records-${dateStr}.json`
+    a.download = fileName
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
     setStatusMsg({ ok: true, text: '战绩已导出为 JSON 文件' })
+  }
+
+  const handleImportClick = () => {
+    if (window.AndroidBridge?.openImportPicker) {
+      window.AndroidBridge.openImportPicker()
+      return
+    }
+    fileInputRef.current?.click()
   }
 
   const handleImportFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,7 +97,7 @@ export function ScoreModal({ open, onClose }: ScoreModalProps) {
               🏆 战绩榜与对局流水
             </h2>
             <p className="text-[10px] text-slate-400">
-              战绩已自动持久化保存在浏览器中，支持文件导入与导出备份
+              战绩已自动持久化保存，支持导出与导入备份文件
             </p>
           </div>
 
@@ -87,7 +118,7 @@ export function ScoreModal({ open, onClose }: ScoreModalProps) {
             </button>
             <button
               type="button"
-              onClick={() => fileInputRef.current?.click()}
+              onClick={handleImportClick}
               className="px-2.5 py-1 text-[11px] rounded-lg bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-300 font-bold cursor-pointer"
             >
               📥 导入战绩

@@ -70,7 +70,11 @@ function loadPersistedRecords(): {
     return { scores: defaultScores, stats: createEmptyStats() }
   }
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    const nativeRaw = window.AndroidBridge?.loadRecords?.()
+    const raw =
+      nativeRaw && nativeRaw.trim().length > 2
+        ? nativeRaw
+        : localStorage.getItem(STORAGE_KEY)
     if (!raw) return { scores: defaultScores, stats: createEmptyStats() }
     const parsed = JSON.parse(raw) as Partial<PersistedRecords>
     if (!parsed || typeof parsed !== 'object') {
@@ -107,7 +111,9 @@ function savePersistedRecords(scores: Record<PlayerId, number>, stats: GameStats
       scores,
       stats,
     }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
+    const jsonStr = JSON.stringify(payload)
+    localStorage.setItem(STORAGE_KEY, jsonStr)
+    window.AndroidBridge?.saveRecords?.(jsonStr)
   } catch {
     // ignore storage quota errors
   }
@@ -680,6 +686,7 @@ export const useGameStore = create<MahjongStore>((set, get) => {
       const state = get()
       if (state.phase !== 'playing') return
       const nextSelected = state.selectedTileId === tileId ? null : tileId
+      window.AndroidBridge?.vibrate?.('tick')
       set({ selectedTileId: nextSelected })
     },
 
@@ -692,12 +699,14 @@ export const useGameStore = create<MahjongStore>((set, get) => {
       ) {
         return
       }
+      window.AndroidBridge?.vibrate?.('click')
       performDiscard('player', state.selectedTileId)
     },
 
     discardTileById: (tileId: string) => {
       const state = get()
       if (state.phase !== 'playing' || state.currentTurn !== 'player') return
+      window.AndroidBridge?.vibrate?.('click')
       performDiscard('player', tileId)
     },
 

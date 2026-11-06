@@ -96,6 +96,22 @@ export interface PersistedRecords {
   stats: GameStats
 }
 
+export interface AndroidNativeBridge {
+  saveRecords: (json: string) => void
+  loadRecords: () => string
+  exportRecordsFile: (json: string, suggestedName: string) => void
+  openImportPicker: () => void
+  vibrate: (type: string) => void
+}
+
+declare global {
+  interface Window {
+    AndroidBridge?: AndroidNativeBridge
+    __onAndroidImportRecords?: (jsonText: string) => void
+    __onAndroidExportSuccess?: (msg: string) => void
+  }
+}
+
 export interface GameState {
   phase: GamePhase
   roundNumber: number
